@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="情緒型発達・知育型発達のセルフチェックツール">
+    <title>発達特性セルフチェック</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Variables */
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --primary-light: #eff6ff;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --danger-bg: #fef2f2;
+            --danger-border: #ef4444;
+            --danger-text: #b91c1c;
+            --success-bg: #f0fdf4;
+            --success-border: #22c55e;
+            --success-text: #15803d;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* Header */
+        header { text-align: center; margin-bottom: 2.5rem; }
+        h1 { font-size: 2.25rem; color: #0f172a; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.025em; }
+        .subtitle { color: var(--text-muted); font-size: 1.05rem; }
+        
+        /* Disclaimer */
+        .disclaimer {
+            background-color: var(--danger-bg);
+            border: 2px solid var(--danger-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .disclaimer::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 6px; height: 100%;
+            background-color: var(--danger-border);
+        }
+        .disclaimer strong {
+            color: var(--danger-text);
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 700;
+        }
+        .disclaimer strong svg { width: 24px; height: 24px; }
+        
+        /* Form Sections */
+        .category-section {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .category-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+        }
+        .progress-count {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            background: #f1f5f9;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            margin-left: auto;
+        }
+        
+        /* Checklist */
+        .checklist { display: flex; flex-direction: column; gap: 0.75rem; }
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .check-item:hover {
+            background-color: var(--primary-light);
+            border-color: #bfdbfe;
+        }
+        .check-item input[type="checkbox"] {
+            appearance: none;
+            background-color: #fff;
+            margin: 0;
+            color: currentColor;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            cursor: pointer;
+        }
+        .check-item input[type="checkbox"]::before {
+            content: "";
+            width: 0.85rem;
+            height: 0.85rem;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            transform: scale(0);
+            transform-origin: bottom left;
+            transition: 120ms transform cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: white;
+        }
+        .check-item input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .check-item input[type="checkbox"]:checked::before { transform: scale(1); }
+        .check-item.checked {
+            background-color: var(--primary-light);
+            border-color: #93c5fd;
+        }
+        .check-label { user-select: none; font-size: 1rem; color: #475569; }
+        .check-item.checked .check-label { color: #1e293b; font-weight: 500; }
+        
+        /* Button */
+        .btn-container { text-align: center; margin: 3rem 0; }
+        .submit-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1.25rem 3.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -4px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.3);
+        }
+        .submit-btn:active { transform: translateY(0); }
+        
+        /* Results Section */
+        #result-section {
+            display: none;
+            background: var(--card);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border-top: 6px solid var(--primary);
+        }
+        .result-header { text-align: center; margin-bottom: 2rem; }
+        .result-header h2 { justify-content: center; font-size: 2rem; border: none; margin-bottom: 0.5rem; }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 640px) { .result-grid { grid-template-columns: 1fr; } }
+        
+        .result-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .result-title { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; }
+        .result-score { font-size: 3.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; line-height: 1; }
+        .result-score span { font-size: 1.5rem; color: var(--text-muted); font-weight: 500;}
+        .result-score.high { color: var(--danger-text); }
+        
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background-color: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 999px;
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .progress-bar.emotion { background: linear-gradient(90deg, #ec4899, #f43f5e); }
+        .progress-bar.intellect { background: linear-gradient(90deg, #3b82f6, #0ea5e9); }
+        .progress-bar.high { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        
+        /* Guidance Section */
+        #guidance-section {
+            display: none;
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+            border: 1px solid #fecdd3;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-top: 2rem;
+            animation: fadeInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .guidance-title {
+            color: #be123c;
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-align: center;
+            justify-content: center;
+        }
+        .guidance-desc {
+            text-align: center;
+            color: #881337;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        .guidance-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .guidance-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            background: white;
+            border-radius: 12px;
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid #fecdd3;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .guidance-link:hover {
+            border-color: #fb7185;
+            transform: translateX(6px);
+            color: #e11d48;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .guidance-link svg { width: 20px; height: 20px; color: #fb7185; transition: transform 0.3s; }
+        .guidance-link:hover svg { transform: translateX(4px); color: #e11d48; }
+
+        /* Animation utilities */
+        .fade-in { animation: fadeIn 0.8s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <header>
+            <h1>発達特性セルフチェック</h1>
+            <p class="subtitle">情緒型発達と知育型発達の傾向をチェックします（全100問）</p>
+        </header>
+
+        <section class="disclaimer">
+            <strong>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                【免責事項】
+            </strong>
+            <p style="margin-top: 0.5rem; color: #7f1d1d;">本サイトは医学的診断ではありません。利用は自己責任でお願いします。運営者は一切の責任を負いません。</p>
+        </section>
+
+        <!-- 情緒型発達 セクション -->
+        <section class="category-section">
+            <h2>
+                <svg style="width: 28px; height: 28px; color: #ec4899;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                情緒型発達
+                <span class="progress-count" id="emotion-count">0 / 50</span>
+            </h2>
+            <div class="checklist" id="emotion-list">
+                <!-- JavaScriptで50問生成 -->
+            </div>
+        </section>
+
+        <!-- 知育型発達 セクション -->
+        <section class="category-section">
+            <h2>
+                <svg style="width: 28px; height: 28px; color: #3b82f6;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                知育型発達
+                <span class="progress-count" id="intellect-count">0 / 50</span>
+            </h2>
+            <div class="checklist" id="intellect-list">
+                <!-- JavaScriptで50問生成 -->
+            </div>
+        </section>
+
+        <div class="btn-container">
+            <button class="submit-btn" onclick="calculateResults()">結果を判定する</button>
+        </div>
+
+        <!-- 結果表示 セクション -->
+        <section id="result-section">
+            <div class="result-header">
+                <h2>チェック結果</h2>
+                <p class="subtitle" style="margin-bottom: 0;">該当する項目の割合（％）</p>
+            </div>
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-title">情緒型発達</div>
+                    <div class="result-score" id="result-emotion-score">0<span>%</span></div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar emotion" id="emotion-bar"></div>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="result-title">知育型発達</div>
+                    <div class="result-score" id="result-intellect-score">0<span>%</span></div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar intellect" id="intellect-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 案内表示 セクション (80%以上で表示) -->
+        <section id="guidance-section">
+            <h3 class="guidance-title">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                専門機関へのご相談について
+            </h3>
+            <p class="guidance-desc">該当率が80%を超えました。より詳しい状況の確認やサポートのために、以下の専門機関・窓口へご相談されることをお勧めいたします。</p>
+            <div class="guidance-links">
+                <a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/hattatsu/index.html" target="_blank" rel="noopener noreferrer" class="guidance-link">
+                    <span>発達障害者支援センター一覧（厚生労働省）</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+                <a href="https://h-navi.jp/" target="_blank" rel="noopener noreferrer" class="guidance-link">
+                    <span>LITALICO発達ナビ（病院検索）</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // 50問のプレースホルダーを生成 (ユーザーが後で実際の質問に書き換えられるように配列を用意)
+        const emotionQuestions = Array.from({length: 50}, (_, i) => `情緒型発達に関する質問項目 ${i + 1}（ここに具体的な内容を入力）`);
+        const intellectQuestions = Array.from({length: 50}, (_, i) => `知育型発達に関する質問項目 ${i + 1}（ここに具体的な内容を入力）`);
+
+        // チェックリストを描画する関数
+        function renderChecklist(containerId, questions, countId) {
+            const container = document.getElementById(containerId);
+            let html = '';
+            questions.forEach((q, i) => {
+                const id = `${containerId}-q${i}`;
+                html += `
+                    <label class="check-item" for="${id}">
+                        <input type="checkbox" id="${id}" class="${containerId}-checkbox" onchange="updateCount('${containerId}', '${countId}')">
+                        <span class="check-label">${q}</span>
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // 選択された数を更新・スタイル変更する関数
+        function updateCount(containerClass, countId) {
+            const checkboxes = document.querySelectorAll(`.${containerClass}-checkbox`);
+            let count = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    count++;
+                    cb.parentElement.classList.add('checked');
+                } else {
+                    cb.parentElement.classList.remove('checked');
+                }
+            });
+            document.getElementById(countId).innerText = `${count} / 50`;
+        }
+
+        // 初期描画
+        renderChecklist('emotion-list', emotionQuestions, 'emotion-count');
+        renderChecklist('intellect-list', intellectQuestions, 'intellect-count');
+
+
+        // 結果を判定する関数
+        function calculateResults() {
+            // チェック数をカウント
+            const emotionChecks = document.querySelectorAll('.emotion-list-checkbox:checked').length;
+            const intellectChecks = document.querySelectorAll('.intellect-list-checkbox:checked').length;
+            
+            // 該当率を計算
+            const emotionPercent = Math.round((emotionChecks / 50) * 100);
+            const intellectPercent = Math.round((intellectChecks / 50) * 100);
+            
+            // UIを更新
+            const resultSection = document.getElementById('result-section');
+            resultSection.style.display = 'block';
+            
+            // アニメーションのため少し遅れてゲージを伸ばす
+            setTimeout(() => {
+                const emotionScoreEl = document.getElementById('result-emotion-score');
+                const intellectScoreEl = document.getElementById('result-intellect-score');
+                const emotionBar = document.getElementById('emotion-bar');
+                const intellectBar = document.getElementById('intellect-bar');
+
+                // カウントアップアニメーション
+                animateValue(emotionScoreEl, 0, emotionPercent, 1000);
+                animateValue(intellectScoreEl, 0, intellectPercent, 1000);
+
+                emotionBar.style.width = emotionPercent + '%';
+                intellectBar.style.width = intellectPercent + '%';
+
+                // 80%以上なら色を警告色（赤）にする
+                if (emotionPercent >= 80) {
+                    emotionScoreEl.classList.add('high');
+                    emotionBar.classList.add('high');
+                } else {
+                    emotionScoreEl.classList.remove('high');
+                    emotionBar.classList.remove('high');
+                }
+
+                if (intellectPercent >= 80) {
+                    intellectScoreEl.classList.add('high');
+                    intellectBar.classList.add('high');
+                } else {
+                    intellectScoreEl.classList.remove('high');
+                    intellectBar.classList.remove('high');
+                }
+
+                // スクロール移動
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // ガイダンスの表示判定 (どちらかが80%以上)
+                const guidanceSection = document.getElementById('guidance-section');
+                if (emotionPercent >= 80 || intellectPercent >= 80) {
+                    setTimeout(() => {
+                        guidanceSection.style.display = 'block';
+                    }, 500); // ゲージが伸び始めた後にフワッと表示
+                } else {
+                    guidanceSection.style.display = 'none';
+                }
+
+            }, 50);
+        }
+
+        // 数字カウントアップのアニメーション関数
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // easeOutQuart ぽいイージング
+                const easeProgress = 1 - Math.pow(1 - progress, 4); 
+                obj.innerHTML = Math.floor(easeProgress * (end - start) + start) + '<span>%</span>';
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end + '<span>%</span>';
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>
