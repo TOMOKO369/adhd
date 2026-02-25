@@ -1,517 +1,702 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="情緒型発達・知育型発達のセルフチェックツール">
     <title>発達特性セルフチェック</title>
-    <!-- Google Fonts -->
+    <!-- Google Fonts: やわらかくてかわいいフォント -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <style>
         /* CSS Reset & Variables */
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --primary-light: #eff6ff;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --danger-bg: #fef2f2;
-            --danger-border: #ef4444;
-            --danger-text: #b91c1c;
-            --success-bg: #f0fdf4;
-            --success-border: #22c55e;
-            --success-text: #15803d;
+            --bg-color: #fffdf5;
+            /* やさしいクリーム色 */
+            --text-main: #5d4a44;
+            /* やわらかいこげ茶色 */
+            --text-muted: #9c8e88;
+            --card-bg: #ffffff;
+            --yes-bg: #ffb7b2;
+            /* ふんわりピンク/オレンジ */
+            --yes-hover: #ff9d96;
+            --no-bg: #a2cffe;
+            /* ふんわりブルー */
+            --no-hover: #8abefa;
+            --btn-text: #ffffff;
+            --accent: #ff9aa2;
+            --progress-bg: #f8ece8;
+            --danger-bg: #ffe4e6;
+            --danger-text: #bd4055;
         }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Noto Sans JP', 'Inter', sans-serif;
-            background-color: var(--bg);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
             padding: 2rem 1rem;
-            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
-        
-        .container { max-width: 800px; margin: 0 auto; }
-        
-        /* Header */
-        header { text-align: center; margin-bottom: 2.5rem; }
-        h1 { font-size: 2.25rem; color: #0f172a; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.025em; }
-        .subtitle { color: var(--text-muted); font-size: 1.05rem; }
-        
+
+        .container {
+            max-width: 640px;
+            width: 100%;
+            margin: auto;
+        }
+
+        /* Card UI */
+        .card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 3rem 2rem;
+            box-shadow: 0 15px 35px rgba(210, 195, 190, 0.3);
+            text-align: center;
+            display: none;
+            /* JSで切り替え */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        /* Animation utilities */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Disclaimer */
         .disclaimer {
             background-color: var(--danger-bg);
-            border: 2px solid var(--danger-border);
-            border-radius: 12px;
+            border-radius: 20px;
             padding: 1.5rem;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .disclaimer::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 6px; height: 100%;
-            background-color: var(--danger-border);
-        }
-        .disclaimer strong {
+            margin-bottom: 2rem;
             color: var(--danger-text);
-            font-size: 1.15rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            box-shadow: inset 0 0 0 2px rgba(189, 64, 85, 0.1);
+        }
+
+        .disclaimer strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
             font-weight: 700;
         }
-        .disclaimer strong svg { width: 24px; height: 24px; }
-        
-        /* Form Sections */
-        .category-section {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        /* Start Screen */
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            line-height: 1.4;
         }
-        .category-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        h2 {
-            font-size: 1.5rem;
-            color: #1e293b;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-        }
-        .progress-count {
-            font-size: 0.875rem;
+
+        .subtitle {
             color: var(--text-muted);
-            font-weight: 500;
-            background: #f1f5f9;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            margin-left: auto;
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
         }
-        
-        /* Checklist */
-        .checklist { display: flex; flex-direction: column; gap: 0.75rem; }
-        .check-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1rem 1.25rem;
-            border-radius: 10px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .check-item:hover {
-            background-color: var(--primary-light);
-            border-color: #bfdbfe;
-        }
-        .check-item input[type="checkbox"] {
-            appearance: none;
-            background-color: #fff;
-            margin: 0;
-            color: currentColor;
-            width: 1.5rem;
-            height: 1.5rem;
-            border: 2px solid #cbd5e1;
-            border-radius: 6px;
-            display: grid;
-            place-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            flex-shrink: 0;
-            margin-top: 0.1rem;
-            cursor: pointer;
-        }
-        .check-item input[type="checkbox"]::before {
-            content: "";
-            width: 0.85rem;
-            height: 0.85rem;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-            transform: scale(0);
-            transform-origin: bottom left;
-            transition: 120ms transform cubic-bezier(0.4, 0, 0.2, 1);
-            background-color: white;
-        }
-        .check-item input[type="checkbox"]:checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-        .check-item input[type="checkbox"]:checked::before { transform: scale(1); }
-        .check-item.checked {
-            background-color: var(--primary-light);
-            border-color: #93c5fd;
-        }
-        .check-label { user-select: none; font-size: 1rem; color: #475569; }
-        .check-item.checked .check-label { color: #1e293b; font-weight: 500; }
-        
-        /* Button */
-        .btn-container { text-align: center; margin: 3rem 0; }
-        .submit-btn {
-            background-color: var(--primary);
-            color: white;
+
+        .start-btn {
+            background-color: var(--yes-bg);
+            color: var(--btn-text);
             border: none;
             padding: 1.25rem 3.5rem;
             font-size: 1.25rem;
             font-weight: 700;
             border-radius: 9999px;
             cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -4px rgba(59, 130, 246, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(255, 183, 178, 0.4);
+            transition: all 0.3s ease;
             font-family: inherit;
         }
-        .submit-btn:hover {
-            background-color: var(--primary-hover);
+
+        .start-btn:hover {
+            background-color: var(--yes-hover);
             transform: translateY(-3px);
-            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 12px 25px rgba(255, 183, 178, 0.5);
         }
-        .submit-btn:active { transform: translateY(0); }
-        
-        /* Results Section */
-        #result-section {
-            display: none;
-            background: var(--card);
-            border-radius: 16px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+
+        /* Question Screen */
+        .category-badge {
+            display: inline-block;
+            background-color: var(--progress-bg);
+            color: var(--text-muted);
+            padding: 0.5rem 1.25rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            min-height: 5rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.5;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
             margin-bottom: 2rem;
-            border-top: 6px solid var(--primary);
         }
-        .result-header { text-align: center; margin-bottom: 2rem; }
-        .result-header h2 { justify-content: center; font-size: 2rem; border: none; margin-bottom: 0.5rem; }
-        
+
+        @media (max-width: 480px) {
+            .btn-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        .answer-btn {
+            flex: 1;
+            padding: 1.25rem 1rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--btn-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-yes {
+            background-color: var(--yes-bg);
+            box-shadow: 0 8px 20px rgba(255, 183, 178, 0.3);
+        }
+
+        .btn-yes:hover {
+            background-color: var(--yes-hover);
+            transform: translateY(-3px);
+        }
+
+        .btn-no {
+            background-color: var(--no-bg);
+            box-shadow: 0 8px 20px rgba(162, 207, 254, 0.3);
+        }
+
+        .btn-no:hover {
+            background-color: var(--no-hover);
+            transform: translateY(-3px);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: underline;
+            font-family: inherit;
+            padding: 0.5rem;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .progress-text {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--progress-bg);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 999px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Result Screen */
         .result-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
-        @media (max-width: 640px) { .result-grid { grid-template-columns: 1fr; } }
-        
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .result-card {
-            background: #f8fafc;
-            border-radius: 12px;
+            background: #fdfaf6;
+            border-radius: 20px;
             padding: 1.5rem;
-            border: 1px solid #e2e8f0;
-            text-align: center;
+            border: 2px solid var(--progress-bg);
         }
-        .result-title { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; }
-        .result-score { font-size: 3.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; line-height: 1; }
-        .result-score span { font-size: 1.5rem; color: var(--text-muted); font-weight: 500;}
-        .result-score.high { color: var(--danger-text); }
-        
-        /* Progress Bar */
-        .progress-bar-container {
-            width: 100%;
-            height: 12px;
-            background-color: #e2e8f0;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-top: 1rem;
+
+        .result-title {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
-        .progress-bar {
-            height: 100%;
-            border-radius: 999px;
-            width: 0%;
-            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+
+        .result-score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
         }
-        .progress-bar.emotion { background: linear-gradient(90deg, #ec4899, #f43f5e); }
-        .progress-bar.intellect { background: linear-gradient(90deg, #3b82f6, #0ea5e9); }
-        .progress-bar.high { background: linear-gradient(90deg, #ef4444, #dc2626); }
-        
+
+        .result-score span {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .result-score.high {
+            color: var(--danger-text);
+        }
+
         /* Guidance Section */
         #guidance-section {
             display: none;
-            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
-            border: 1px solid #fecdd3;
-            border-radius: 16px;
-            padding: 2.5rem;
             margin-top: 2rem;
-            animation: fadeInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            position: relative;
-            overflow: hidden;
+            background: #fffafa;
+            border: 2px dashed var(--accent);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            animation: fadeIn 0.8s ease;
         }
-        
-        @keyframes fadeInScale {
-            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        
+
         .guidance-title {
-            color: #be123c;
-            font-weight: 800;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-align: center;
-            justify-content: center;
+            color: var(--danger-text);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
         }
+
         .guidance-desc {
-            text-align: center;
-            color: #881337;
-            margin-bottom: 2rem;
-            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
         }
+
         .guidance-links {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
+
         .guidance-link {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 1.25rem 1.5rem;
             background: white;
-            border-radius: 12px;
-            color: #1e293b;
+            border-radius: 16px;
+            color: var(--text-main);
             text-decoration: none;
             font-weight: 700;
-            border: 1px solid #fecdd3;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 2px solid var(--progress-bg);
             transition: all 0.3s ease;
         }
-        .guidance-link:hover {
-            border-color: #fb7185;
-            transform: translateX(6px);
-            color: #e11d48;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        .guidance-link svg { width: 20px; height: 20px; color: #fb7185; transition: transform 0.3s; }
-        .guidance-link:hover svg { transform: translateX(4px); color: #e11d48; }
 
-        /* Animation utilities */
-        .fade-in { animation: fadeIn 0.8s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .guidance-link:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 154, 162, 0.2);
+        }
+
+        .guidance-link svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+        }
+
+        .restart-btn {
+            background-color: var(--progress-bg);
+            color: var(--text-main);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            cursor: pointer;
+            margin-top: 2.5rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .restart-btn:hover {
+            background-color: #f1e0d9;
+        }
     </style>
 </head>
+
 <body>
-    <div class="container fade-in">
-        <header>
-            <h1>発達特性セルフチェック</h1>
-            <p class="subtitle">情緒型発達と知育型発達の傾向をチェックします（全100問）</p>
-        </header>
+    <div class="container">
 
-        <section class="disclaimer">
-            <strong>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                【免責事項】
-            </strong>
-            <p style="margin-top: 0.5rem; color: #7f1d1d;">本サイトは医学的診断ではありません。利用は自己責任でお願いします。運営者は一切の責任を負いません。</p>
-        </section>
+        <!-- ================= スタート画面 ================= -->
+        <div id="start-screen" class="card active">
+            <h1 class="title">発達特性セルフチェック</h1>
+            <p class="subtitle">情緒型・知育型発達の傾向をチェックします<br>（一問ずつ直感でお答えください）</p>
 
-        <!-- 情緒型発達 セクション -->
-        <section class="category-section">
-            <h2>
-                <svg style="width: 28px; height: 28px; color: #ec4899;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                情緒型発達
-                <span class="progress-count" id="emotion-count">0 / 50</span>
-            </h2>
-            <div class="checklist" id="emotion-list">
-                <!-- JavaScriptで50問生成 -->
+            <div class="disclaimer">
+                <strong>【免責事項】</strong>
+                本サイトは医学的診断ではありません。利用は自己責任でお願いします。運営者は一切の責任を負いません。
             </div>
-        </section>
 
-        <!-- 知育型発達 セクション -->
-        <section class="category-section">
-            <h2>
-                <svg style="width: 28px; height: 28px; color: #3b82f6;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                知育型発達
-                <span class="progress-count" id="intellect-count">0 / 50</span>
-            </h2>
-            <div class="checklist" id="intellect-list">
-                <!-- JavaScriptで50問生成 -->
-            </div>
-        </section>
-
-        <div class="btn-container">
-            <button class="submit-btn" onclick="calculateResults()">結果を判定する</button>
+            <button class="start-btn" onclick="startCheck()">スタート</button>
         </div>
 
-        <!-- 結果表示 セクション -->
-        <section id="result-section">
-            <div class="result-header">
-                <h2>チェック結果</h2>
-                <p class="subtitle" style="margin-bottom: 0;">該当する項目の割合（％）</p>
+        <!-- ================= 質問画面 ================= -->
+        <div id="question-screen" class="card">
+            <div class="progress-wrapper">
+                <div class="progress-text">
+                    <span id="current-count">1</span> / <span id="total-count">100</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
             </div>
+
+            <div class="category-badge" id="category-badge">情緒型発達</div>
+
+            <div class="question-text" id="question-text">
+                <!-- 質問文がここに入ります -->
+            </div>
+
+            <div class="btn-group">
+                <button class="answer-btn btn-yes" onclick="answer(true)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    はい
+                </button>
+                <button class="answer-btn btn-no" onclick="answer(false)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                    いいえ
+                </button>
+            </div>
+
+            <button class="back-btn" id="back-btn" onclick="goBack()" style="display: none;">前の問題に戻る</button>
+        </div>
+
+        <!-- ================= 結果画面 ================= -->
+        <div id="result-screen" class="card">
+            <h2 class="title">チェック結果</h2>
+            <p class="subtitle">該当する項目の割合（％）</p>
+
             <div class="result-grid">
                 <div class="result-card">
                     <div class="result-title">情緒型発達</div>
-                    <div class="result-score" id="result-emotion-score">0<span>%</span></div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar emotion" id="emotion-bar"></div>
-                    </div>
+                    <div class="result-score" id="res-emotion">0<span>%</span></div>
                 </div>
                 <div class="result-card">
                     <div class="result-title">知育型発達</div>
-                    <div class="result-score" id="result-intellect-score">0<span>%</span></div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar intellect" id="intellect-bar"></div>
-                    </div>
+                    <div class="result-score" id="res-intellect">0<span>%</span></div>
                 </div>
             </div>
-        </section>
 
-        <!-- 案内表示 セクション (80%以上で表示) -->
-        <section id="guidance-section">
-            <h3 class="guidance-title">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                専門機関へのご相談について
-            </h3>
-            <p class="guidance-desc">該当率が80%を超えました。より詳しい状況の確認やサポートのために、以下の専門機関・窓口へご相談されることをお勧めいたします。</p>
-            <div class="guidance-links">
-                <a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/hattatsu/index.html" target="_blank" rel="noopener noreferrer" class="guidance-link">
-                    <span>発達障害者支援センター一覧（厚生労働省）</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
-                <a href="https://h-navi.jp/" target="_blank" rel="noopener noreferrer" class="guidance-link">
-                    <span>LITALICO発達ナビ（病院検索）</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
+            <div id="guidance-section">
+                <h3 class="guidance-title">専門機関へのご案内</h3>
+                <p class="guidance-desc">該当率が80%を超えました。より詳しい状況の確認やサポートのために、以下の専門機関・窓口へご相談されることをお勧めいたします。</p>
+                <div class="guidance-links">
+                    <a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/hattatsu/index.html"
+                        target="_blank" rel="noopener noreferrer" class="guidance-link">
+                        発達障害者支援センター一覧
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="https://h-navi.jp/" target="_blank" rel="noopener noreferrer" class="guidance-link">
+                        LITALICO発達ナビ（病院検索）
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
             </div>
-        </section>
+
+            <button class="restart-btn" onclick="location.reload()">もう一度チェックする</button>
+        </div>
 
     </div>
 
     <script>
-        // 50問のプレースホルダーを生成 (ユーザーが後で実際の質問に書き換えられるように配列を用意)
-        const emotionQuestions = Array.from({length: 50}, (_, i) => `情緒型発達に関する質問項目 ${i + 1}（ここに具体的な内容を入力）`);
-        const intellectQuestions = Array.from({length: 50}, (_, i) => `知育型発達に関する質問項目 ${i + 1}（ここに具体的な内容を入力）`);
+        // -------------------------
+        // 1. 質問データ定義
+        // -------------------------
+        const emotionData = [
+            "相手の表情から感情を読み取るのが苦手",
+            "冗談や皮肉を真に受けて傷つくことが多い",
+            "会話で「行間を読む」ことが難しい",
+            "興味があることなら、相手が退屈していても話し続けてしまう",
+            "視線を合わせることに違和感や苦痛を感じる",
+            "場の空気に合わない発言をしてしまうことがある",
+            "比喩表現（「雲を掴むような」など）を言葉通りに受け取ってしまう",
+            "初対面の人との雑談が極端に苦手",
+            "名前を呼ばれても気づかないことがよくある",
+            "集団行動よりも一人でいることを好む",
+            "急な予定変更があると、激しく混乱したり怒ったりする",
+            "自分なりの「独自のルール」や「手順」に強くこだわる",
+            "物を置く位置や順番が少しでも変わると落ち着かない",
+            "特定の分野（電車、数字、ロゴ等）に驚異的な記憶力がある",
+            "毎日同じルートで移動することにこだわる",
+            "感情の起伏が激しく、一度怒ると収まりにくい",
+            "順番待ちや列に並ぶことが非常に苦痛",
+            "考えるより先に体が動いてしまう（衝動性）",
+            "じっとしていられず、手足をモゾモゾ動かしてしまう",
+            "忘れ物や失くし物が日常的に多い",
+            "掃除や片付けの段取りが立てられず、部屋が散らかる",
+            "複数のことを同時に並行して行うのが苦手（マルチタスク困難）",
+            "大きな音（掃除機、人混み、花火等）が苦手",
+            "特定の服の肌触り（タグ、素材）を極端に嫌がる",
+            "偏食が激しく、特定の食感のものしか食べられない",
+            "眩しい光に対して、他の人より敏感に反応する",
+            "自分の体をどこかにぶつけやすく、距離感が掴みづらい",
+            "痛みに非常に強い、あるいは逆に非常に弱い",
+            "人の話し声が背景の雑音に紛れて聞こえづらい",
+            "自分の感情を言葉で説明するのが難しい",
+            "手先が不器用で、紐結びやボタン留めが苦手",
+            "表情が乏しい、あるいは「顔が怖い」と言われることがある",
+            "独り言が多い、または人の言葉をオウム返しする",
+            "予定がない日があると、何をすればいいか分からず不安になる",
+            "集団の中で浮いていると感じることが多い",
+            "勝ち負けに異常にこだわり、負けるとひどく落ち込む",
+            "他人の持ち物を勝手に触ってしまうことがある",
+            "正義感が強すぎて、他人の小さなミスを許せず指摘してしまう",
+            "変化を嫌い、新しい環境に馴染むのに時間がかかる",
+            "決まったフレーズを繰り返し使う癖がある",
+            "自分が関心のない話には全く耳を貸さない",
+            "お金の管理が苦手で、衝動買いをしてしまう",
+            "締切間際にならないと作業に手がつかない",
+            "相手との物理的な距離感が近すぎると言われる",
+            "自分が他人からどう見られているか想像しにくい",
+            "運動会や発表会などのイベントが苦痛だった",
+            "名前を覚えるのが極端に苦手",
+            "睡眠リズムが崩れやすく、朝起きるのが辛い",
+            "指示を最後まで聞かずに動いて失敗する",
+            "集中しすぎると周りの音が全く聞こえなくなる（過集中）"
+        ];
 
-        // チェックリストを描画する関数
-        function renderChecklist(containerId, questions, countId) {
-            const container = document.getElementById(containerId);
-            let html = '';
-            questions.forEach((q, i) => {
-                const id = `${containerId}-q${i}`;
-                html += `
-                    <label class="check-item" for="${id}">
-                        <input type="checkbox" id="${id}" class="${containerId}-checkbox" onchange="updateCount('${containerId}', '${countId}')">
-                        <span class="check-label">${q}</span>
-                    </label>
-                `;
-            });
-            container.innerHTML = html;
+        const intellectData = [
+            "文章を読んでいるとき、同じ行を何度も読み返してしまう",
+            "漢字の形が覚えられず、線が多かったり少なかったりする",
+            "「ぬ」と「め」、「わ」と「ね」など似た文字を書き間違える",
+            "文字の大きさがバラバラになり、マス目からはみ出す",
+            "音読をすると、たどたどしくなる（拾い読み）",
+            "鏡文字（左右反転した文字）を書いてしまう",
+            "促音（「っ」）や拗音（「ゃ、ゅ、ょ」）の書き漏らしが多い",
+            "文章を読んでも、その内容を要約することができない",
+            "簡単な暗算に時間がかかる、または指を使わないとできない",
+            "桁数の多い数字を書き写すときにミスをする",
+            "繰り上がり、繰り下がりの計算で混乱する",
+            "文章題の内容を式に変換することができない",
+            "九九を覚えるのに、他の人より何倍も時間がかかった",
+            "図形の問題（回転させた形など）が全く理解できない",
+            "左右（右と左）を瞬時に判断できないことがある",
+            "地図を読んで目的地にたどり着くのが難しい",
+            "アナログ時計の針を見て、時刻を読み取るのが苦手",
+            "「10分後」「1時間前」といった時間の計算ができない",
+            "順序立てて物事を説明するのが苦手",
+            "複数の指示を一度に受けると、1つ目しか覚えられない",
+            "短期記憶が弱く、さっき聞いたことをすぐ忘れる",
+            "物の名前がすぐに出てこず「あれ」「それ」を多用する",
+            "物語の時系列（昔・今）を整理するのが苦手",
+            "上下左右、前後などの位置関係を把握しにくい",
+            "道具（ハサミ、定規、コンパス）を器用に使えない",
+            "球技でボールをキャッチするのが苦手（空間把握の弱さ）",
+            "ダンスや体操などの複雑な動きを真似できない",
+            "文脈から不明な言葉の意味を推測するのが難しい",
+            "表やグラフから情報を読み取ることが苦手",
+            "主語と述語がバラバラな文章を書いてしまう",
+            "ノートの使い方が不自然で、書き方が整理されていない",
+            "筆圧が極端に強い、あるいは弱すぎて字が薄い",
+            "記憶の抜け落ち（自分の行動の記憶など）が目立つ",
+            "論理的な飛躍があり、話が支離滅裂になりやすい",
+            "パズルや積み木の組み立てが苦手",
+            "お釣りの計算ができず、小銭が財布に溜まってしまう",
+            "物事の優先順位をつけるのが非常に苦手",
+            "抽象的な概念（平和、自由など）の理解に時間がかかる",
+            "比率（％）や分数の概念が直感的に分からない",
+            "自分が書いた字を後で読み返すことができない",
+            "カレンダーの管理ができず、約束を忘れる",
+            "辞書を引く作業に時間がかかりすぎる",
+            "文字を書くのが遅く、板書が間に合わない",
+            "英単語のスペルが全く覚えられない",
+            "物事を分類（仲間分け）するのが苦手",
+            "原因と結果の関係を結びつけるのが苦手",
+            "話の要点を一言でまとめることができない",
+            "手順書やマニュアルを理解するのに苦労する",
+            "図画工作で、完成図を想像しながら作ることができない",
+            "自分の考えを紙に書き出すと、まとまらなくなる"
+        ];
+
+        // 質問の統合
+        const allQuestions = [];
+        emotionData.forEach(text => allQuestions.push({ category: "情緒型発達", type: "emotion", text }));
+        intellectData.forEach(text => allQuestions.push({ category: "知育型発達", type: "intellect", text }));
+
+        const totalCount = allQuestions.length;
+        document.getElementById('total-count').innerText = totalCount;
+
+        // 状態管理
+        let currentIndex = 0;
+        let userAnswers = []; // true(はい) または false(いいえ) を保存
+
+        // 画面切り替え関数
+        function showScreen(screenId) {
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
         }
 
-        // 選択された数を更新・スタイル変更する関数
-        function updateCount(containerClass, countId) {
-            const checkboxes = document.querySelectorAll(`.${containerClass}-checkbox`);
-            let count = 0;
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    count++;
-                    cb.parentElement.classList.add('checked');
-                } else {
-                    cb.parentElement.classList.remove('checked');
-                }
-            });
-            document.getElementById(countId).innerText = `${count} / 50`;
+        // チェック開始
+        function startCheck() {
+            currentIndex = 0;
+            userAnswers = [];
+            showScreen('question-screen');
+            renderQuestion();
         }
 
-        // 初期描画
-        renderChecklist('emotion-list', emotionQuestions, 'emotion-count');
-        renderChecklist('intellect-list', intellectQuestions, 'intellect-count');
+        // 質問を画面に描画
+        function renderQuestion() {
+            const q = allQuestions[currentIndex];
 
+            // プログレス＆テキスト更新
+            document.getElementById('current-count').innerText = currentIndex + 1;
+            document.getElementById('progress-fill').style.width = `${((currentIndex) / totalCount) * 100}%`;
 
-        // 結果を判定する関数
+            document.getElementById('category-badge').innerText = q.category;
+            document.getElementById('question-text').innerText = q.text;
+
+            // 最初だけ「戻る」ボタンを隠す
+            document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
+        }
+
+        // はい / いいえ の回答
+        function answer(isYes) {
+            userAnswers[currentIndex] = isYes;
+            currentIndex++;
+
+            if (currentIndex < totalCount) {
+                renderQuestion();
+            } else {
+                // 完了したら100%にして結果画面へ
+                document.getElementById('progress-fill').style.width = '100%';
+                setTimeout(() => {
+                    calculateResults();
+                    showScreen('result-screen');
+                }, 300);
+            }
+        }
+
+        // １つ戻る
+        function goBack() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // 結果計算＆表示
         function calculateResults() {
-            // チェック数をカウント
-            const emotionChecks = document.querySelectorAll('.emotion-list-checkbox:checked').length;
-            const intellectChecks = document.querySelectorAll('.intellect-list-checkbox:checked').length;
-            
-            // 該当率を計算
-            const emotionPercent = Math.round((emotionChecks / 50) * 100);
-            const intellectPercent = Math.round((intellectChecks / 50) * 100);
-            
-            // UIを更新
-            const resultSection = document.getElementById('result-section');
-            resultSection.style.display = 'block';
-            
-            // アニメーションのため少し遅れてゲージを伸ばす
+            let emotionTrueCount = 0;
+            let intellectTrueCount = 0;
+
+            userAnswers.forEach((ans, idx) => {
+                if (ans) {
+                    if (allQuestions[idx].type === 'emotion') emotionTrueCount++;
+                    if (allQuestions[idx].type === 'intellect') intellectTrueCount++;
+                }
+            });
+
+            // 50問中のパーセンテージ
+            const emotionPercent = Math.round((emotionTrueCount / emotionData.length) * 100);
+            const intellectPercent = Math.round((intellectTrueCount / intellectData.length) * 100);
+
+            // 数字アニメーション表示
+            animateValue(document.getElementById('res-emotion'), 0, emotionPercent, 1000);
+            animateValue(document.getElementById('res-intellect'), 0, intellectPercent, 1000);
+
+            // 80%以上なら赤文字にする
             setTimeout(() => {
-                const emotionScoreEl = document.getElementById('result-emotion-score');
-                const intellectScoreEl = document.getElementById('result-intellect-score');
-                const emotionBar = document.getElementById('emotion-bar');
-                const intellectBar = document.getElementById('intellect-bar');
+                const elEmotion = document.getElementById('res-emotion');
+                const elIntellect = document.getElementById('res-intellect');
+                if (emotionPercent >= 80) elEmotion.classList.add('high');
+                if (intellectPercent >= 80) elIntellect.classList.add('high');
 
-                // カウントアップアニメーション
-                animateValue(emotionScoreEl, 0, emotionPercent, 1000);
-                animateValue(intellectScoreEl, 0, intellectPercent, 1000);
-
-                emotionBar.style.width = emotionPercent + '%';
-                intellectBar.style.width = intellectPercent + '%';
-
-                // 80%以上なら色を警告色（赤）にする
-                if (emotionPercent >= 80) {
-                    emotionScoreEl.classList.add('high');
-                    emotionBar.classList.add('high');
-                } else {
-                    emotionScoreEl.classList.remove('high');
-                    emotionBar.classList.remove('high');
-                }
-
-                if (intellectPercent >= 80) {
-                    intellectScoreEl.classList.add('high');
-                    intellectBar.classList.add('high');
-                } else {
-                    intellectScoreEl.classList.remove('high');
-                    intellectBar.classList.remove('high');
-                }
-
-                // スクロール移動
-                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                // ガイダンスの表示判定 (どちらかが80%以上)
-                const guidanceSection = document.getElementById('guidance-section');
+                // 80%以上で案内を表示
                 if (emotionPercent >= 80 || intellectPercent >= 80) {
-                    setTimeout(() => {
-                        guidanceSection.style.display = 'block';
-                    }, 500); // ゲージが伸び始めた後にフワッと表示
-                } else {
-                    guidanceSection.style.display = 'none';
+                    document.getElementById('guidance-section').style.display = 'block';
                 }
-
-            }, 50);
+            }, 1000);
         }
 
-        // 数字カウントアップのアニメーション関数
+        // 数字カウントアップのアニメーション
         function animateValue(obj, start, end, duration) {
             let startTimestamp = null;
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // easeOutQuart ぽいイージング
-                const easeProgress = 1 - Math.pow(1 - progress, 4); 
+                const easeProgress = 1 - Math.pow(1 - progress, 4); // easeOutQuart 
                 obj.innerHTML = Math.floor(easeProgress * (end - start) + start) + '<span>%</span>';
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
@@ -521,6 +706,8 @@
             };
             window.requestAnimationFrame(step);
         }
+
     </script>
 </body>
+
 </html>
