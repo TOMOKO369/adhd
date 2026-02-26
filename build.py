@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import re
+
+html_design = """<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
@@ -279,234 +281,18 @@
   </div>
 
 </div>
+"""
 
-    <script>
-        // -------------------------
-        // 1. 質問データ定義
-        // -------------------------
-        const emotionData = [
-            "相手の表情から感情を読み取るのが苦手",
-            "冗談や皮肉を真に受けて傷つくことが多い",
-            "会話で「行間を読む」ことが難しい",
-            "興味があることなら、相手が退屈していても話し続けてしまう",
-            "視線を合わせることに違和感や苦痛を感じる",
-            "場の空気に合わない発言をしてしまうことがある",
-            "比喩表現（「雲を掴むような」など）を言葉通りに受け取ってしまう",
-            "初対面の人との雑談が極端に苦手",
-            "名前を呼ばれても気づかないことがよくある",
-            "集団行動よりも一人でいることを好む",
-            "急な予定変更があると、激しく混乱したり怒ったりする",
-            "自分なりの「独自のルール」や「手順」に強くこだわる",
-            "物を置く位置や順番が少しでも変わると落ち着かない",
-            "特定の分野（電車、数字、ロゴ等）に驚異的な記憶力がある",
-            "毎日同じルートで移動することにこだわる",
-            "感情の起伏が激しく、一度怒ると収まりにくい",
-            "順番待ちや列に並ぶことが非常に苦痛",
-            "考えるより先に体が動いてしまう（衝動性）",
-            "じっとしていられず、手足をモゾモゾ動かしてしまう",
-            "忘れ物や失くし物が日常的に多い",
-            "掃除や片付けの段取りが立てられず、部屋が散らかる",
-            "複数のことを同時に並行して行うのが苦手（マルチタスク困難）",
-            "大きな音（掃除機、人混み、花火等）が苦手",
-            "特定の服の肌触り（タグ、素材）を極端に嫌がる",
-            "偏食が激しく、特定の食感のものしか食べられない",
-            "眩しい光に対して、他の人より敏感に反応する",
-            "自分の体をどこかにぶつけやすく、距離感が掴みづらい",
-            "痛みに非常に強い、あるいは逆に非常に弱い",
-            "人の話し声が背景の雑音に紛れて聞こえづらい",
-            "自分の感情を言葉で説明するのが難しい",
-            "手先が不器用で、紐結びやボタン留めが苦手",
-            "表情が乏しい、あるいは「顔が怖い」と言われることがある",
-            "独り言が多い、または人の言葉をオウム返しする",
-            "予定がない日があると、何をすればいいか分からず不安になる",
-            "集団の中で浮いていると感じることが多い",
-            "勝ち負けに異常にこだわり、負けるとひどく落ち込む",
-            "他人の持ち物を勝手に触ってしまうことがある",
-            "正義感が強すぎて、他人の小さなミスを許せず指摘してしまう",
-            "変化を嫌い、新しい環境に馴染むのに時間がかかる",
-            "決まったフレーズを繰り返し使う癖がある",
-            "自分が関心のない話には全く耳を貸さない",
-            "お金の管理が苦手で、衝動買いをしてしまう",
-            "締切間際にならないと作業に手がつかない",
-            "相手との物理的な距離感が近すぎると言われる",
-            "自分が他人からどう見られているか想像しにくい",
-            "運動会や発表会などのイベントが苦痛だった",
-            "名前を覚えるのが極端に苦手",
-            "睡眠リズムが崩れやすく、朝起きるのが辛い",
-            "指示を最後まで聞かずに動いて失敗する",
-            "集中しすぎると周りの音が全く聞こえなくなる（過集中）"
-        ];
+with open('c:/Users/minib/OneDrive/ドキュメント/code/adhd/index.html', 'r', encoding='utf-8') as f:
+    text = f.read()
 
-        const intellectData = [
-            "文章を読んでいるとき、同じ行を何度も読み返してしまう",
-            "漢字の形が覚えられず、線が多かったり少なかったりする",
-            "「ぬ」と「め」、「わ」と「ね」など似た文字を書き間違える",
-            "文字の大きさがバラバラになり、マス目からはみ出す",
-            "音読をすると、たどたどしくなる（拾い読み）",
-            "鏡文字（左右反転した文字）を書いてしまう",
-            "促音（「っ」）や拗音（「ゃ、ゅ、ょ」）の書き漏らしが多い",
-            "文章を読んでも、その内容を要約することができない",
-            "簡単な暗算に時間がかかる、または指を使わないとできない",
-            "桁数の多い数字を書き写すときにミスをする",
-            "繰り上がり、繰り下がりの計算で混乱する",
-            "文章題の内容を式に変換することができない",
-            "九九を覚えるのに、他の人より何倍も時間がかかった",
-            "図形の問題（回転させた形など）が全く理解できない",
-            "左右（右と左）を瞬時に判断できないことがある",
-            "地図を読んで目的地にたどり着くのが難しい",
-            "アナログ時計の針を見て、時刻を読み取るのが苦手",
-            "「10分後」「1時間前」といった時間の計算ができない",
-            "順序立てて物事を説明するのが苦手",
-            "複数の指示を一度に受けると、1つ目しか覚えられない",
-            "短期記憶が弱く、さっき聞いたことをすぐ忘れる",
-            "物の名前がすぐに出てこず「あれ」「それ」を多用する",
-            "物語の時系列（昔・今）を整理するのが苦手",
-            "上下左右、前後などの位置関係を把握しにくい",
-            "道具（ハサミ、定規、コンパス）を器用に使えない",
-            "球技でボールをキャッチするのが苦手（空間把握の弱さ）",
-            "ダンスや体操などの複雑な動きを真似できない",
-            "文脈から不明な言葉の意味を推測するのが難しい",
-            "表やグラフから情報を読み取ることが苦手",
-            "主語と述語がバラバラな文章を書いてしまう",
-            "ノートの使い方が不自然で、書き方が整理されていない",
-            "筆圧が極端に強い、あるいは弱すぎて字が薄い",
-            "記憶の抜け落ち（自分の行動の記憶など）が目立つ",
-            "論理的な飛躍があり、話が支離滅裂になりやすい",
-            "パズルや積み木の組み立てが苦手",
-            "お釣りの計算ができず、小銭が財布に溜まってしまう",
-            "物事の優先順位をつけるのが非常に苦手",
-            "抽象的な概念（平和、自由など）の理解に時間がかかる",
-            "比率（％）や分数の概念が直感的に分からない",
-            "自分が書いた字を後で読み返すことができない",
-            "カレンダーの管理ができず、約束を忘れる",
-            "辞書を引く作業に時間がかかりすぎる",
-            "文字を書くのが遅く、板書が間に合わない",
-            "英単語のスペルが全く覚えられない",
-            "物事を分類（仲間分け）するのが苦手",
-            "原因と結果の関係を結びつけるのが苦手",
-            "話の要点を一言でまとめることができない",
-            "手順書やマニュアルを理解するのに苦労する",
-            "図画工作で、完成図を想像しながら作ることができない",
-            "自分の考えを紙に書き出すと、まとまらなくなる"
-        ];
-
-        // 質問の統合
-        const allQuestions = [];
-        emotionData.forEach(text => allQuestions.push({ category: "情緒型発達", type: "emotion", text }));
-        intellectData.forEach(text => allQuestions.push({ category: "知育型発達", type: "intellect", text }));
-
-        const totalCount = allQuestions.length;
-        document.getElementById('total-count').innerText = totalCount;
-
-        // 状態管理
-        let currentIndex = 0;
-        let userAnswers = []; // true(はい) または false(いいえ) を保存
-
-        // 画面切り替え関数
-        function showScreen(screenId) {
-            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        // チェック開始
-        function startCheck() {
-            currentIndex = 0;
-            userAnswers = [];
-            showScreen('question-screen');
-            renderQuestion();
-        }
-
-        // 質問を画面に描画
-        function renderQuestion() {
-            const q = allQuestions[currentIndex];
-
-            // プログレス＆テキスト更新
-            document.getElementById('current-count').innerText = currentIndex + 1;
-            document.getElementById('progress-fill').style.width = `${((currentIndex) / totalCount) * 100}%`;
-
-            document.getElementById('category-badge').innerText = q.category;
-            document.getElementById('question-text').innerText = q.text;
-
-            // 最初だけ「戻る」ボタンを隠す
-            document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
-        }
-
-        // はい / いいえ の回答
-        function answer(isYes) {
-            userAnswers[currentIndex] = isYes;
-            currentIndex++;
-
-            if (currentIndex < totalCount) {
-                renderQuestion();
-            } else {
-                // 完了したら100%にして結果画面へ
-                document.getElementById('progress-fill').style.width = '100%';
-                setTimeout(() => {
-                    calculateResults();
-                    showScreen('result-screen');
-                }, 300);
-            }
-        }
-
-        // １つ戻る
-        function goBack() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderQuestion();
-            }
-        }
-
-        // 結果計算＆表示
-        function calculateResults() {
-            let emotionTrueCount = 0;
-            let intellectTrueCount = 0;
-
-            userAnswers.forEach((ans, idx) => {
-                if (ans) {
-                    if (allQuestions[idx].type === 'emotion') emotionTrueCount++;
-                    if (allQuestions[idx].type === 'intellect') intellectTrueCount++;
-                }
-            });
-
-            // 50問中のパーセンテージ
-            const emotionPercent = Math.round((emotionTrueCount / emotionData.length) * 100);
-            const intellectPercent = Math.round((intellectTrueCount / intellectData.length) * 100);
-
-            // 数字アニメーション表示
-            animateValue(document.getElementById('res-emotion'), 0, emotionPercent, 1000);
-            animateValue(document.getElementById('res-intellect'), 0, intellectPercent, 1000);
-
-            // 80%以上なら赤文字にする
-            setTimeout(() => {
-                const elEmotion = document.getElementById('res-emotion');
-                const elIntellect = document.getElementById('res-intellect');
-                if (emotionPercent >= 80) elEmotion.classList.add('high');
-                if (intellectPercent >= 80) elIntellect.classList.add('high');
-
-                // 80%以上で案内を表示
-                if (emotionPercent >= 80 || intellectPercent >= 80) {
-                    document.getElementById('guidance-section').style.display = 'block';
-                }
-            }, 1000);
-        }
-
-        // 数字カウントアップのアニメーション
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const easeProgress = 1 - Math.pow(1 - progress, 4); // easeOutQuart 
-                obj.innerHTML = Math.floor(easeProgress * (end - start) + start) + '<span>%</span>';
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                } else {
-                    obj.innerHTML = end + '<span>%</span>';
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-
-    </script>
-</body>
-</html>
+# Extract the script
+match = re.search(r'<script(?! id="tailwind-config").*?</script>', text, flags=re.DOTALL)
+if match:
+    script_content = match.group(0)
+    final_html = html_design + "\n    " + script_content + "\n</body>\n</html>"
+    with open('c:/Users/minib/OneDrive/ドキュメント/code/adhd/index.html', 'w', encoding='utf-8') as f:
+        f.write(final_html)
+    print("Done rewriting index.html")
+else:
+    print("Script tags not found in index.html!")
